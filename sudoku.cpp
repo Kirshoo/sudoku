@@ -62,9 +62,10 @@ bool Sudoku::checkDigitInField(int digit, int row, int col) {
   return true;
 }
 
-// Sets digit on board[row][col]
+/*
+ * Sets digit on a specified location */
 bool Sudoku::setDigitInField(int digit, int row, int col) {
-  if (!initial[row][col]) {
+  if (!initial[row][col]) { // Only set 0 or null digits from initial
     field[row][col] = digit;
     return true;
   }
@@ -72,6 +73,8 @@ bool Sudoku::setDigitInField(int digit, int row, int col) {
   return false;
 }
 
+/*
+ * Removes a digits from a specified location */
 bool Sudoku::removeDigitInField(int row, int col) {
   if (initial[row][col]) {
     return false;
@@ -81,29 +84,38 @@ bool Sudoku::removeDigitInField(int row, int col) {
   return true;
 }
 
+/* 
+ * Solves sudoku with a backtracking algorithm */
 bool Sudoku::solve(int row, int col) {
-  if (col == SIZE) {
+  // Base case
+  if (col == SIZE) { // Reached the end of the column
     col = 0;
-    row += 1;
-    if (row == SIZE)
+    row += 1; // Move to the next row
+    if (row == SIZE) // Reached the last row, puzzle is solved
       return true;
   }
 
-  if (field[row][col] != 0) {
+  // If the digits is already there, skip it
+  if (initial[row][col] != 0) {
     return solve(row, col + 1);
   } 
   
   for (int i {1}; i <= 9; ++i) {
-    if (checkDigitInField(i, row, col)) {
-      setDigitInField(i, row, col);
+    // For each digit from 1 to 9
+    if (checkDigitInField(i, row, col)) { // Check if its valid
+      setDigitInField(i, row, col); // If so, set it to the field
 
+      // If it ends up solving the puzzle with the digit, return
       if (solve(row, col + 1)) {
         return true;
       }
       
-      setDigitInField(0, row, col);
+      // Else remove digit
+      removeDigitInField(row, col);
     }
+    
+    // Non valid digits are skipped
   }
 
-  return false;
+  return false; // Puzzle is unsolvable
 }
